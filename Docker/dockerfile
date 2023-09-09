@@ -1,0 +1,22 @@
+FROM  amazonlinux:2
+VOLUME /home/vpnclient
+EXPOSE 1194/udp
+
+WORKDIR /home/root
+COPY  v3.0.8.tar.gz .
+ARG   VPN_IP
+ENV   VPN_IP=$VPN_IP
+ARG   AWS_ACCESS_KEY_ID
+ENV   AWS_ACCESS_KEY_ID=$AWS_ACCESS_KEY_ID
+ARG   AWS_SECRET_ACCESS_KEY
+ENV   AWS_SECRET_ACCESS_KEY=$AWS_SECRET_ACCESS_KEY
+ARG   AWS_DEFAULT_REGION
+ENV   AWS_DEFAULT_REGION=$AWS_DEFAULT_REGION
+COPY  in_docker_install_openvpn.sh .
+RUN   ./in_docker_install_openvpn.sh
+
+# https://github.com/kylemanna/docker-openvpn/blob/master/Dockerfile
+# CMD ["ovpn_run"]
+# https://github.com/kylemanna/docker-openvpn/blob/master/bin/ovpn_run#L100
+WORKDIR /etc/openvpn
+CMD ["openvpn","/etc/openvpn/server.conf"]
